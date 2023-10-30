@@ -1,0 +1,102 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.Enumeration;
+
+public class SimpleQuizApp extends JFrame {
+    private int questionIndex = 0;
+    private int score = 0;
+    
+    private JLabel questionLabel;
+    private ButtonGroup optionsGroup;
+    private JRadioButton[] options;
+    private JButton submitButton;
+    private String[] questions;
+    private String[][] optionsData;
+    private int[] correctAnswers;
+    
+    public SimpleQuizApp() {
+        setTitle("Simple Quiz Application");
+        setSize(400, 300);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
+        
+        questions = new String[] {
+            " What is official language for Android Development ?",
+            "Which environment variable is used to set the java path?",
+            "What is the extension of java code files?"
+        };
+        
+        optionsData = new String[][] {
+            {"java", "kotlin", "c", "c++"},
+            {"java", "MAVEN_PATH", "JAVA_HOME", "JAVA_PATH"},
+            {".js", ".exe", ".java", ".txt"}
+        };
+        
+        correctAnswers = new int[] {1, 2, 2};
+        
+        questionLabel = new JLabel(questions[questionIndex]);
+        add(questionLabel, BorderLayout.NORTH);
+        
+        optionsGroup = new ButtonGroup();
+        options = new JRadioButton[optionsData[questionIndex].length];
+        JPanel optionsPanel = new JPanel(new GridLayout(optionsData[questionIndex].length, 1));
+        for (int i = 0; i < optionsData[questionIndex].length; i++) {
+            options[i] = new JRadioButton(optionsData[questionIndex][i]);
+            optionsGroup.add(options[i]);
+            optionsPanel.add(options[i]);
+        }
+        add(optionsPanel, BorderLayout.CENTER);
+        
+        submitButton = new JButton("Submit");
+        submitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                checkAnswer();
+                questionIndex++;
+                if (questionIndex < questions.length) {
+                    updateQuestion();
+                } else {
+                    showResult();
+                }
+            }
+        });
+        add(submitButton, BorderLayout.SOUTH);
+    }
+    
+    private void updateQuestion() {
+        questionLabel.setText(questions[questionIndex]);
+        for (int i = 0; i < optionsData[questionIndex].length; i++) {
+            options[i].setText(optionsData[questionIndex][i]);
+        }
+        optionsGroup.clearSelection();
+    }
+    
+    private void checkAnswer() {
+        for (int i = 0; i < options.length; i++) {
+            if (options[i].isSelected()) {
+                if (i == correctAnswers[questionIndex]) {
+                    score++;
+                }
+                return;
+            }
+        }
+    }
+
+    
+    private void showResult() {
+        JOptionPane.showMessageDialog(this, "Quiz is over. Your score is: " + score + " out of " + questions.length);
+        System.exit(0);
+    }
+    
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                SimpleQuizApp quizApp = new SimpleQuizApp();
+                quizApp.setVisible(true);
+            }
+        });
+    }
+}
